@@ -17,8 +17,7 @@ using std::endl;
 random start
 timestep
 force to each box
-notes
-github*/
+notes*/
 
 double length(double x1, double x2, double y1, double y2)
 {

@@ -1919,7 +1919,7 @@ inline bool fignum_exists(long number)
     return ret;
 }
 
-inline void figure_size(size_t w, size_t h)
+void figure_size(size_t w, size_t h)
 {
     detail::_interpreter::get();
 
@@ -2622,7 +2622,7 @@ inline void pause(Numeric interval)
     Py_DECREF(res);
 }
 
-inline void save(const std::string& filename, const int dpi=0)
+inline void save(const std::string& filename, const int dpi=100)
 {
     detail::_interpreter::get();
 

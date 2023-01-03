@@ -16,6 +16,8 @@ dt = properties.dt[0]
 boxlims = properties.boxlims[0]
 markersize1 = properties.markersize1[0]
 markersize2 = properties.markersize2[0]
+numR1 = properties.numR1[0]
+numR2 = properties.numR2[0]
 
 rowsR1 = []
 with open('R1.csv') as file1:
@@ -24,28 +26,41 @@ with open('R1.csv') as file1:
         rowsR1.append(row)
 
 rowsR2 = []
-with open('R1.csv') as file2:
-    reader_obj = csv.reader(file2)
-    for row in reader_obj:
-        rowsR1.append(row)
+with open('R2.csv') as file2:
+    reader_object = csv.reader(file2)
+    for row in reader_object:
+        rowsR2.append(row)
 
-
-for i in range(timesteps):
+for i in range(1,timesteps+1):
 
     x_posR1 = []
     y_posR1 = []
     x_posR2 = []
     y_posR2 = []
-    for j in range(len(rowsR1[0])):
+    for j in range(numR1):
         if j % 2 == 0:
-            x_posR1.append(rowsR1[i+1][j])
+            x_posR1.append(rowsR1[i][j])
         else:
-            y_posR1.append(rowsR1[i+1][j])
-    for j in range(len(rowsR2[0])):
+            y_posR1.append(rowsR1[i][j])
+    for j in range(numR2):
         if j % 2 == 0:
-            x_posR1.append(rowsR2[i+1][j])
+            x_posR2.append(rowsR2[i][j])
         else:
-            y_posR1.append(rowsR2[i+1][j])
+            y_posR2.append(rowsR2[i][j])
+
+    x = x_posR1
+    y = y_posR1
+    print(x)
+    print(y)
+    plt.figure(1)
+    plt.plot(x,y,"ko")
+    #plt.plot(x_posR2,y_posR2,"ko")
+    iteration = str(i)
+    png = ".png"
+    loc = "C:/Users/ross/OneDrive/Desktop/Uni Work/Project/projectslides/slide"
+    savepoint = loc + iteration + png
+    plt.savefig(savepoint)
+
 
     
 

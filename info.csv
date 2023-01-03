@@ -1,0 +1,2 @@
+timesteps,dt,runs,num_particles
+1000,0.25,12,500

@@ -23,6 +23,8 @@ delta_t = info.dt[0]
 runs = info.runs[0]
 num_particles = info.num_particles[0]
 
+#hello there
+
 w = 10
 h = 10
 mrk1 = 2*R1*h*500/(9*boxlims)
@@ -81,6 +83,7 @@ if jericho == 1:
     Title = "Root Mean Squared Velocity Over Time for an Increasing $\\phi$\n" + string1 + string2
     plt.title(Title)
     plt.yscale('log')
+    plt.xscale('log')
     colours = ['#D8BFD8', '#DDA0DD', '#EE82EE', '#DA70D6', '#FF00FF', '#BA55D3', '#9370DB', '#8A2BE2', '#9400D3', '#9932CC', '#800080', '#4B0082']
     for i in range(1,runs+1):
         string = str(packingfractions[0][i-1])

@@ -24,8 +24,8 @@ int main()
     double G = 1.0;
     double boxlims;
     double origin = 0.0;
-    int timesteps = 1000;
-    int num_particles = 500;
+    int timesteps = 3000;
+    int num_particles = 300;
     int numb_particles = num_particles;
 
     if (num_particles % 2 == 1)
@@ -39,7 +39,7 @@ int main()
     int i, j, n, p, m;
     double x_particle_n, y_particle_n, x_n, y_n, x_j, y_j;
     double dy, dx, theta;
-    double dt = 0.25;
+    double dt = 0.4;
     double t;
     int runs = 12;
     double phi;

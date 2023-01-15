@@ -1,0 +1,2 @@
+timesteps,dt,boxlims,N,R1,std_dev
+1000,0.1,500,500,1,10

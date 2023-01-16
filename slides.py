@@ -117,6 +117,10 @@ for i in range(timesteps_msd):
 jericho = 1
 if jericho == 1:
 
+    #from 10^1 onwards, find average rms_v across all packing fractions at regular intervals
+    #use power law decay fit to find \beta
+    #
+
     plt.figure(1, figsize=(w,h), dpi = 100)
     string1 = str(num_particles)
     string2 = " Particles"

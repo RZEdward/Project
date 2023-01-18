@@ -25,7 +25,7 @@ int main()
     double boxlims;
     double origin = 0.0;
     int timesteps = 1000;
-    int num_particles = 300;
+    int num_particles = 500;
     int numb_particles = num_particles;
 
     if (num_particles % 2 == 1)
@@ -44,6 +44,7 @@ int main()
     int runs = 12;
     double phi;
     int numR1, numR2;
+    double a = 0.5;
 
     std::random_device rd{};
     std::mt19937 gen{rd()};
@@ -78,6 +79,11 @@ int main()
             File_rms_v << iteration << ", ";
         }
         File_rms_v << timesteps << endl;
+
+
+    std::ofstream File4("dts_speed.csv");
+    std::vector<double> dts(timesteps);
+    dts[0] = dt;
 
     for (m = 0; m < runs; m++)
     {
@@ -130,6 +136,7 @@ int main()
             std::vector<double> F_y(num_particles);
 
             double v2_total = 0.0;
+            double max_vel = 0;
             for (j = 0; j < num_particles; j++)
             {
                 for (n = 0; n < num_particles; n++) 
@@ -189,9 +196,42 @@ int main()
 
                     */
 
-                    F_x[j] += cos(theta)*2*G*R1*R1*R1*(D - r)/D;          
-                    F_y[j] += sin(theta)*2*G*R1*R1*R1*(D - r)/D; 
+                    double R = radii[j];
+
+                    F_x[j] += cos(theta)*2*G*R*R*R*(D - r)/D;          
+                    F_y[j] += sin(theta)*2*G*R*R*R*(D - r)/D; 
                 }
+
+                double vel = sqrt((1/u)*F_x[j]*(1/u)*F_x[j] + (1/u)*F_y[j]*(1/u)*F_y[j]);
+                if (vel > max_vel)
+                {
+                    max_vel = vel;
+                }
+
+            }
+            
+
+            double max_dt = 0.4;
+            double base_dt = 0.4;
+
+            double displacement = sqrt((1/u)*F_x[j]*dt*(1/u)*F_x[j]*dt + (1/u)*F_y[j]*dt*(1/u)*F_y[j]*dt);
+
+            if (displacement > R1)
+            {
+                dt = (R1/displacement)*base_dt;
+            }
+            else
+            {
+                dt = base_dt;
+            }
+            
+            if (i != 0)
+            {
+                dts[i] = dt;
+            }
+
+            for (j = 0; j < num_particles; j++)
+            {
 
                 shift_x[j] = (1/u)*F_x[j]*dt;
                 shift_y[j] = (1/u)*F_y[j]*dt;
@@ -205,6 +245,10 @@ int main()
 
             double v2_average = v2_total/num_particles;
             double rms_v = sqrt(v2_average); //this is the rms_v at this timestep at this packing fraction
+
+            cout << "(" << rms_v << ", " << max_vel << ", " << dt << ")";
+            cout << "   ";
+
             if (i != timesteps - 1)
             {
                 File_rms_v << rms_v << ",";
@@ -263,14 +307,26 @@ int main()
 
         }
 
+        for (i = 0; i < timesteps - 1; i++)
+        {
+            File4 << dts[i] << ",";
+        }
+        File4 << dts[timesteps - 1] << endl;
+
     }
 
+
+
     std::ofstream File_info("info.csv");
-    File_info << "timesteps" << "," << "dt" << "," << "runs" << "," << "num_particles" << endl;
-    File_info << timesteps << "," << dt << "," << runs << "," << num_particles << endl;
+    File_info << "timesteps" << "," << "runs" << "," << "num_particles" << endl;
+    File_info << timesteps << "," << runs << "," << num_particles << endl;
     File_info.close();
 
     File_rms_v.close();
+
+    
+
+    File4.close();
 
     return 0;
 

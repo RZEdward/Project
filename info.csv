@@ -1,2 +1,2 @@
-timesteps,dt,runs,num_particles
-1000,0.4,12,300
+timesteps,runs,num_particles
+100,12,100

@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import csv
 from IPython.display import display
+from scipy.optimize import curve_fit
 
 properties = pd.read_csv('properties.csv')
 
@@ -13,7 +14,6 @@ brownianinfo = pd.read_csv('brownianinfo.csv')
 browniandisplacementinfo = pd.read_csv('browniandisplacementinfo.csv')
 
 timesteps = properties.timesteps[0]
-dt = properties.dt[0]
 boxlims = properties.boxlims[0]
 numR1 = properties.numR1[0]
 numR2 = properties.numR2[0]
@@ -22,7 +22,7 @@ R2 = properties.R2[0]
 phi = properties.phi[0]
 
 steps = info.timesteps[0]
-delta_t = info.dt[0]
+#delta_t = info.dt[0]
 runs = info.runs[0]
 num_particles = info.num_particles[0]
 
@@ -35,6 +35,18 @@ N_msd = browniandisplacementinfo.N[0]
 timesteps_msd = browniandisplacementinfo.timesteps[0]
 dt_msd = browniandisplacementinfo.dt[0]
 std_dev = browniandisplacementinfo.std_dev[0]
+
+dts_movie = []
+with open('dts_movie.csv') as file7:
+    read_object_dts_movie = csv.reader(file7)
+    for row in read_object_dts_movie:
+        dts_movie.append(row)
+
+dts_speed = []
+with open('dts_speed.csv') as file8:
+    read_object_dts_speed = csv.reader(file8)
+    for row in read_object_dts_speed:
+        dts_speed.append(row)
 
 w = 10
 h = 10
@@ -103,10 +115,6 @@ for i in range(1,timesteps_brownian+1):
     for j in range(N_movie):
         rows_brownian_data[i][j] = float(rows_brownian_data[i][j])
 
-time_data = []
-for i in range(steps):
-    time_data.append(i*delta_t)
-
 time_data_msd = []
 for i in range(timesteps_msd):
     time_data_msd.append(i*dt_msd)
@@ -117,10 +125,7 @@ for i in range(timesteps_msd):
 jericho = 1
 if jericho == 1:
 
-    #from 10^1 onwards, find average rms_v across all packing fractions at regular intervals
-    #use power law decay fit to find \beta
-    #
-
+    
     plt.figure(1, figsize=(w,h), dpi = 100)
     string1 = str(num_particles)
     string2 = " Particles"
@@ -129,9 +134,55 @@ if jericho == 1:
     plt.yscale('log')
     plt.xscale('log')
     colours = ['#D8BFD8', '#DDA0DD', '#EE82EE', '#DA70D6', '#FF00FF', '#BA55D3', '#9370DB', '#8A2BE2', '#9400D3', '#9932CC', '#800080', '#4B0082']
-    for i in range(1,runs+1):
-        string = str(packingfractions[0][i-1])
-        plt.plot(time_data, v_rms_data[i], label = string, color = colours[i-1])
+
+    
+    for j in range(runs):
+        time_data = [float(dts_speed[j][0])]
+        for i in range(1,steps):
+            prev_time_element = float(time_data[i-1])
+            del_t = float(dts_speed[j][i])
+            element = prev_time_element + del_t
+            time_data.append(element)
+
+
+        string = str(packingfractions[0][j])
+        plt.plot(time_data, v_rms_data[j+1], label = string, color = colours[j])
+
+        
+
+    #start = int(10/delta_t)
+    #end = steps
+    #model_time = time_data[start:]
+    #average_rms = []
+    #for i in range(start, end):
+        #count = 0
+        #for j in range(1, runs + 1):
+            #count += v_rms_data[j][i]
+        #val = count/runs
+        #average_rms.append(val)
+
+    #xdata = np.array(model_time)
+    #ydata = np.array(average_rms)
+
+    #xdata_log = np.log10(xdata)
+    #ydata_log = np.log10(ydata)
+
+    #def linlaw(x, b):
+       #return x * b
+    
+    #popt_log, pcov_log = curve_fit(linlaw, xdata_log, ydata_log)
+
+    #beta = round(popt_log[0], 2)
+
+    #model_label = "$t^{" + str(beta) + "}$"
+
+    #ine_fit = []
+    #for i in range(len(xdata)):
+        #model = xdata[i]**(beta)
+        #line_fit.append(model)
+        
+    #plt.plot(xdata,line_fit, 'k--')
+    #plt.text(xdata[int(len(xdata)/3)],line_fit[int(len(xdata)/3)], model_label, fontsize = 14)
     plt.xlabel("Time ($s$)")
     plt.ylabel("$\\sqrt{\\langle v^{2} \\rangle}$")
     plt.legend(loc = 'upper right', title = '$\\phi$')
@@ -142,7 +193,16 @@ if jericho == 1:
 echo = 0
 if echo == 1:
 
+    time_data_movie = [float(dts_movie[0][0])]
+    for i in range(1,timesteps):
+        prev_time_element = float(time_data_movie[i-1])
+        del_t = float(dts_movie[0][i])
+        element = prev_time_element + del_t
+        time_data_movie.append(element)
+
     for i in range(1,timesteps+1):
+
+        movie_dt = str(dts_movie[0][i-1])
 
         x_posR1 = []
         y_posR1 = []
@@ -175,13 +235,16 @@ if echo == 1:
         label1 = "Box Dimensions: "
         label2 = str(boxlims)
         label3 = "\n"
+        label31 = "Timestep (s) Between Now & Next Slide = "
+        label32 = movie_dt
+        label33 = "\n"
         label4 = "Packing Fraction: "
         label5 = str(phi)
         label6 = "\n"
         label7 = "R1 = 1.0, R2 = 1.4\n"
         label8 = "Slide "
         iteration = str(i)
-        label = label1 + label2 + label3 + label4 + label5 + label6 + label7 + label8 + iteration
+        label = label1 + label2 + label3 + label31 + label32 + label33 + label4 + label5 + label6 + label7 + label8 + iteration
         plt.xlabel(label)
         png = ".png"
         loc = "C:/Users/ross/OneDrive/Desktop/Uni Work/Project/projectslides/soft_repulsion_slide"

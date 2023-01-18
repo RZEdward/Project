@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <utility>
+#include <math.h>
 using std::cout;
 using std::endl;
 
@@ -25,6 +26,7 @@ int main()
     int timesteps = 100;
     int num_particles = 300;
     int numb_particles = num_particles;
+    double kB = 1.380649*pow(10,-23);
 
     if (num_particles % 2 == 1)
     {
@@ -91,13 +93,13 @@ int main()
     int numR1 = 2*x_posR1.size();
     int numR2 = 2*x_posR2.size();
 
-    std::ofstream File3("properties.csv");
+    std::ofstream File3("LJproperties.csv");
     File3 << "timesteps" << "," << "boxlims" << "," << "numR1" << "," << "numR2" << "," << "R1" << "," << "R2" << "," << "phi" << endl;
     File3 << timesteps << "," << boxlims << "," << numR1 << "," << numR2 << "," << R1 << "," << R2 << "," << phi << endl;
     File3.close();
 
-    std::ofstream File1("R1.csv");
-    std::ofstream File2("R2.csv");
+    std::ofstream File1("LJR1.csv");
+    std::ofstream File2("LJR2.csv");
 
     std::string labelx = "x_part";
     std::string labely = "y_part";
@@ -197,6 +199,10 @@ int main()
 
                 double R = radii[j];
 
+                
+
+                //#### change to lennard jones potential
+
                 F_x[j] += cos(theta)*2*G*R*R*R*(D - r)/D;          
                 F_y[j] += sin(theta)*2*G*R*R*R*(D - r)/D; 
             }
@@ -222,6 +228,7 @@ int main()
         {
             dt = base_dt;
         }
+
 
         dt = a/max_vel;
         if (i != 0)
@@ -298,7 +305,7 @@ int main()
 
     }
 
-    std::ofstream File4("dts_movie.csv");
+    std::ofstream File4("dts_LJ.csv");
     for (i = 0; i < timesteps - 1; i++)
     {
         File4 << dts[i] << ",";

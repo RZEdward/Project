@@ -23,10 +23,13 @@ int main()
     double u = 1.0;
     double G = 1.0;
     double origin = 0.0;
-    int timesteps = 100;
-    int num_particles = 300;
+    int timesteps = 1000;
+    int num_particles = 20*20;
     int numb_particles = num_particles;
     double kB = 1.380649*pow(10,-23);
+    double eps = 1.0;
+    double sig = 1.7818;
+    int I, J;
 
     if (num_particles % 2 == 1)
     {
@@ -34,20 +37,23 @@ int main()
     }
 
     double R1 = 1.0;
-    double R2 = 1.4;
-    double phi = 0.75;
+    double R2 = 1.0;
+    double phi = 0.25;
     double boxlims = sqrt(PI*(numb_particles/2*R1*R1 + num_particles/2*R2*R2)/phi);
     double r, D;
     int i, j, n, p;
     double x_particle_n, y_particle_n, x_n, y_n, x_j, y_j;
     double dy, dx, theta;
-    double dt = 0.1;
+    double dt = 0.025;
     double a = 0.5;
+
+    double std_dev = 0.1*boxlims/sqrt(num_particles);
 
     std::random_device rd{};
     std::mt19937 gen{rd()};
     std::default_random_engine generator;
     std::uniform_real_distribution<double> uniform(0.0,boxlims);
+    std::normal_distribution<double> distribution(0.0, std_dev);
 
     std::vector<double> x_pos(num_particles);
     std::vector<double> y_pos(num_particles);   
@@ -71,9 +77,35 @@ int main()
 
     for (i = 0; i < num_particles; i++)
         {
-            x_pos[i] = uniform(generator);
-            y_pos[i] = uniform(generator);
+            //x_pos[i] = uniform(generator);
+            //y_pos[i] = uniform(generator); //want no initial contact
+           
+
+            for (j = 0; j < sqrt(num_particles); j++)
+            {
+                if ( j*sqrt(num_particles) <= i && i < (j+1)*sqrt(num_particles) )
+                {
+                    I = j; 
+                    continue;
+                }
+            }
+            
+            for (j = 0; j < sqrt(num_particles); j++)
+            {
+                if ( j*sqrt(num_particles) <= i && i < (j+1)*sqrt(num_particles) )
+                {
+                    J = i - j*sqrt(num_particles); 
+                    continue;
+                }
+            }
+                
+            x_pos[i] = boxlims/(2*sqrt(num_particles)) + I*boxlims/sqrt(num_particles)  +  distribution(generator);
+
+            y_pos[i] = boxlims/(2*sqrt(num_particles)) + J*boxlims/sqrt(num_particles)  +  distribution(generator);
+
         }
+
+
 
     for (i = 0; i < num_particles/2; i++) 
         {
@@ -187,11 +219,7 @@ int main()
 
                 x_n = x_particle_n;
                 y_n = y_particle_n;
-                
-                if (r > D) 
-                {
-                    continue;
-                }
+            
 
                 dx = x_j - x_n;
                 dy = y_j - y_n;
@@ -199,12 +227,8 @@ int main()
 
                 double R = radii[j];
 
-                
-
-                //#### change to lennard jones potential
-
-                F_x[j] += cos(theta)*2*G*R*R*R*(D - r)/D;          
-                F_y[j] += sin(theta)*2*G*R*R*R*(D - r)/D; 
+                F_x[j] += cos(theta)*(24*eps*pow(sig,6)*(2*pow(sig,6)-pow(r,6)))/pow(r,13);         
+                F_y[j] += sin(theta)*(24*eps*pow(sig,6)*(2*pow(sig,6)-pow(r,6)))/pow(r,13);
             }
 
             double vel = sqrt((1/u)*F_x[j]*(1/u)*F_x[j] + (1/u)*F_y[j]*(1/u)*F_y[j]);
@@ -216,13 +240,14 @@ int main()
         }
 
         double max_dt = 0.4;
-        double base_dt = 0.4;
+        double base_dt = 0.025;
 
         double displacement = sqrt((1/u)*F_x[j]*dt*(1/u)*F_x[j]*dt + (1/u)*F_y[j]*dt*(1/u)*F_y[j]*dt);
 
         if (displacement > R1)
         {
-            dt = (R1/displacement)*base_dt;
+            //dt = (R1/displacement)*base_dt;
+            dt = base_dt;
         }
         else
         {
@@ -230,7 +255,7 @@ int main()
         }
 
 
-        dt = a/max_vel;
+        //dt = a/max_vel;
         if (i != 0)
         {
             dts[i] = dt;
@@ -238,7 +263,7 @@ int main()
 
         for (j = 0; j < num_particles; j++)
         {
-
+            //cout << "(" << F_x[j] << ", " << F_y[j] << ")    "; 
             shift_x[j] = (1/u)*F_x[j]*dt;
             shift_y[j] = (1/u)*F_y[j]*dt;
         
@@ -302,6 +327,8 @@ int main()
                 y_pos[j] = y_pos[j] + shift_y[j];
             }
         }
+
+        cout << i+1 << "/" << timesteps << endl;
 
     }
 

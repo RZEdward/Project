@@ -241,13 +241,14 @@ if echo == 1:
         label4 = "Packing Fraction: "
         label5 = str(phi)
         label6 = "\n"
-        label7 = "R1 = 1.0, R2 = 1.4\n"
+        Rlabel = "R1 = " + str(R1) + ", R2 = " + str(R2) + "\n"
+        label7 = Rlabel
         label8 = "Slide "
         iteration = str(i)
         label = label1 + label2 + label3 + label31 + label32 + label33 + label4 + label5 + label6 + label7 + label8 + iteration
         plt.xlabel(label)
         png = ".png"
-        loc = "C:/Users/ross/OneDrive/Desktop/Uni Work/Project/projectslides/soft_repulsion_slide"
+        loc = "C:/Users/ross/OneDrive/Desktop/Uni Work/Project/projectslides/Soft Repulsion/soft_repulsion_slide"
         savepoint = loc + iteration + png
         plt.savefig(savepoint)
 
@@ -311,7 +312,7 @@ if alpha == 1:
             label = label1 + label2 + label6 + label7 + label8 + iteration
             plt.xlabel(label)
             png = ".png"
-            loc = "C:/Users/ross/OneDrive/Desktop/Uni Work/Project/projectslides/brownian_slide"
+            loc = "C:/Users/ross/OneDrive/Desktop/Uni Work/Project/projectslides/Brownian/brownian_slide"
             savepoint = loc + iteration + png
             plt.savefig(savepoint)
 
